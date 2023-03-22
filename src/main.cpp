@@ -1,54 +1,42 @@
-#include "engine.hxx"
+#include "graphic/graphicinit.hxx"
+#include "myimgui.h"
 
-int main(int argc, char *argv[]){    
+int main(int argc, char *argv[]){
 
-    engine eng;
+    graphicInit gr;
+    gr.load_texture("../../materials/beer.png",0);
+    gr.initProgramBackground();
 
-   eng.initfTriagBackground();
-//init shaders
-    std::string error = eng.initProgramBackground();//init opengl programs
-    if (!error.empty())
-    {
-        std::cerr << error << std::endl;
-        return EXIT_FAILURE;
-    }
-    error = eng.initProgramBody();//init opengl programs
-        if (!error.empty())
-        {
-            std::cerr << error << std::endl;
-            return EXIT_FAILURE;
+    imgui_init(gr.window,&gr.gl_context,gr.rend);
+
+    SDL_Event event_log;
+
+    while (true){
+
+        SDL_PollEvent(&event_log);
+        ImGui_ImplSDL2_ProcessEvent(&event_log);
+        if(event_log.type==SDL_KEYDOWN){
+            if(event_log.key.keysym.scancode==SDL_SCANCODE_SPACE){
+                break;
+            }
         }
 
 
-    //loading textures
-    if (!eng.load_texture("materials/water.png",0)){
-        std::cout<<"failed to load start.png"<<std::endl;
-        return EXIT_FAILURE;
-    }
-    if (!eng.load_texture("materials/ship.png",1)){
-        std::cout<<"failed to load start.png"<<std::endl;
-        return EXIT_FAILURE;
-    }
-    if (!eng.load_texture("materials/map.png",2)){
-        std::cout<<"failed to load start.png"<<std::endl;
-        return EXIT_FAILURE;
-    }
-    if (!eng.load_texture("materials/stone.png",3)){
-        std::cout<<"failed to load start.png"<<std::endl;
-        return EXIT_FAILURE;
-    }
 
-    bool q=true;
 
-    while(q){
-        q=eng.event();
-        eng.logic();
-        eng.renderGame();
+
+        gr.renderOneColGL();
+        gr.render_background(0);
+
+        imgui_newframe();
+        imgui_window();
+        imgui_render();
+
+        gr.swapBuffers();
 
     }
 
-
-
+    imgui_shutdown();
 
 return 0;
 }

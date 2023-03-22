@@ -1,12 +1,10 @@
 #pragma once
 
+//#include "graphic/graphicinit.hxx"
 
-#include "engine.hxx"
 #include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-//#include "imgui_internal.h"
-#include "misc/cpp/imgui_stdlib.h"
 
 void imgui_init(SDL_Window* window, SDL_GLContext* gl_context,SDL_Renderer* rend){
 
@@ -32,18 +30,15 @@ void imgui_init(SDL_Window* window, SDL_GLContext* gl_context,SDL_Renderer* rend
 
     //ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
 }
-void imgui_newframe(SDL_Window* window){
+void imgui_newframe(){
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(window);
+    //ImGui_ImplSDL2_NewFrame(window);
+    ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 }
-void imgui_window(int& angle,float& waterPower,bool& crash){
+void imgui_window(){
     ImGui::Begin("Window");
-
-    ImGui::SliderInt("angle",&angle,0,360);
-    ImGui::SliderFloat("waterPower", &waterPower, 0.0f, 0.01f);
-    ImGui::Checkbox("crash",&crash);
-
+    ImGui::Text("sadfsafaf");
     ImGui::End();
 
 }

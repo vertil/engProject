@@ -1,5 +1,6 @@
 #ifndef GRAPHICINIT_H
 #define GRAPHICINIT_H
+
 #pragma once
 #include <filesystem>
 #include <map>
@@ -14,18 +15,24 @@
 #include <sstream>
 #include <stdexcept>
 #include <thread>
-#include <SDL2/SDL.h>
+
+
+//#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+//glm
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
+//other
 #include "../structs.hxx"
 #include "../animation.hxx"
 #include "../numbers.hxx"
 #include "../lodepng.h"
-#include "../myimgui.h"
+//
+//#include "../myimgui.h"
 #include "../glad/glad.h"
+
 
 static void APIENTRY callback_opengl_debug(
     GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
@@ -43,11 +50,12 @@ class graphicInit
     //textures
     GLuint tex_handl [20];
     //----SDL
-    SDL_Window *window=NULL;
     SDL_Event event_log;
+public:
+    SDL_Window *window=NULL;
     SDL_Renderer *rend=NULL;
     SDL_GLContext gl_context=NULL;
-
+private:
     //text
     TTF_Font *gFont = NULL;
     std::vector<SDL_Texture*> names;

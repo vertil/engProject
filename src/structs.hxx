@@ -70,9 +70,4 @@ struct simple_triangle{
     simple_vertex v[3];
 };
 
-bool checkCollision(triangle &a,triangle& b){
-
-
-}
-
 

@@ -118,7 +118,7 @@ graphicInit::graphicInit()
 
             gl_context=SDL_GL_CreateContext(window);
 
-    imgui_init(window,&gl_context,rend);
+    //imgui_init(window,&gl_context,rend);
 
     SDL_ShowCursor(SDL_ENABLE);
 
@@ -158,7 +158,7 @@ graphicInit::graphicInit()
 graphicInit::~graphicInit()
 {
     delete numbers_;
-    imgui_shutdown();
+    //imgui_shutdown();
 
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(window);
@@ -478,22 +478,22 @@ std::string graphicInit::initProgramBody()
 std::string graphicInit::activateProgBackground(uint8_t text_num)
 {
     glUseProgram(program_id_background);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
             int location = glGetUniformLocation(program_id_background, "s_texture");
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
             assert(-1 != location);
     int texture_unit = text_num;//number of texture
     glActiveTexture(GL_TEXTURE0 + texture_unit);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
             glUniform1i(location, 0 + texture_unit);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
             glEnable(GL_BLEND);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
             return "";
 }
@@ -543,19 +543,19 @@ void graphicInit::render_triangle(const triangle &t)
                           &t.v[0].tex_x);
     //OM_GL_CHECK()
     glEnableVertexAttribArray(1);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
             glDrawArrays(GL_TRIANGLES, 0, 3);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 
 }
 
 void graphicInit::renderOneColGL()
 {
     glClearColor(0.357,0.950,0.665,0.0f);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
             glClear(GL_COLOR_BUFFER_BIT);
-    OM_GL_CHECK()
+    //OM_GL_CHECK()
 }
 
 void graphicInit::render_background(int pos)
@@ -647,9 +647,10 @@ void graphicInit::createNameTetures()
 
     numbers_=new numbersText(12,10);
 
-    numbers_->setPlace(body1,body2);
+    //numbers_->setPlace(body1,body2);
 
     //numbers_->info();
 
 
 }
+
