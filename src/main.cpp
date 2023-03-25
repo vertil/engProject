@@ -1,16 +1,21 @@
 #include "graphic/graphicinit.hxx"
 #include "myimgui.h"
+#include "iostream"
 
 int main(int argc, char *argv[]){
+
 
     graphicInit gr;
     gr.load_texture("../materials/beer.png",0);
     gr.initProgramBackground();
 
+    std::cout<< gr.initProgramBody()<<std::endl;
+
     imgui_init(gr.window,&gr.gl_context,gr.rend);
 
     SDL_Event event_log;
 
+    glm::mat4 testMath=glm::mat4( 1.0 );
     while (true){
 
         SDL_PollEvent(&event_log);
@@ -21,9 +26,12 @@ int main(int argc, char *argv[]){
             }
         }
 
-        gr.renderOneColGL();
-        gr.render_background(0);
 
+        gr.renderOneColGL();
+        std::cout<< gr.activateProgBody(0, testMath)<<std::endl;
+        gr.render_triangle(gr.background1, testMath);
+
+        //imgui part
         imgui_newframe();
         imgui_window();
         imgui_render();
@@ -33,6 +41,5 @@ int main(int argc, char *argv[]){
     }
 
     imgui_shutdown();
-
 return 0;
 }

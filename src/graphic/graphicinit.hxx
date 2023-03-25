@@ -46,11 +46,9 @@ class graphicInit
     GLuint        program_id_background = 0;
     GLuint        program_id_body = 0;
 
-
     //textures
     GLuint tex_handl [20];
-    //----SDL
-    SDL_Event event_log;
+
 public:
     SDL_Window *window=NULL;
     SDL_Renderer *rend=NULL;
@@ -74,10 +72,13 @@ private:
     Uint32 lastTime=110;
     uint16_t minutes_=0;
     uint16_t seconds_=0;
-
+public:
     //background
     triangle background1;
     triangle background2;
+
+    //test matrix
+    glm::mat4 testMath=glm::mat4( 1.0 );
 
 public:
     graphicInit();
@@ -90,13 +91,9 @@ public:
     std::string activateProgBackground(uint8_t text_num);
     std::string activateProgBody(uint8_t text_num, glm::mat4 mat_in);
     //render
-    void render_triangle(const triangle& t);
+    void render_triangle(const triangle& t, glm::mat4& mat_in);
     void renderOneColGL();
     void render_background(int pos);
-    void render_sprite(const sprite& t);
-    //font ????
-    void createTextureName(std::string& text,int position);
-    void createNameTetures();
 
 
 };

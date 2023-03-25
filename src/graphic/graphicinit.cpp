@@ -56,7 +56,6 @@ graphicInit::graphicInit()
     std::string_view platform{platform_from_sdl};
     using namespace std::string_view_literals;
 
-
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_context_profile);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major_ver);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor_ver);
@@ -116,13 +115,11 @@ graphicInit::graphicInit()
     OM_GL_CHECK()
 
 
-            gl_context=SDL_GL_CreateContext(window);
-
-    //imgui_init(window,&gl_context,rend);
+    gl_context=SDL_GL_CreateContext(window);
 
     SDL_ShowCursor(SDL_ENABLE);
 
-
+    //1
     background1.v[0].x=-1;
     background1.v[0].y=-1;
     background1.v[0].tex_x=0.0;
@@ -158,8 +155,6 @@ graphicInit::graphicInit()
 graphicInit::~graphicInit()
 {
     delete numbers_;
-    //imgui_shutdown();
-
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(window);
     window=NULL;
@@ -195,12 +190,14 @@ bool graphicInit::load_texture(std::string_view path, int number)
                  GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
                  &image[0]);
     OM_GL_CHECK()
-            //making correct color of zoomed texture
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    //making correct color of zoomed texture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     OM_GL_CHECK()
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     OM_GL_CHECK()
-            return true;
+
+    return true;
 }
 
 void graphicInit::swapBuffers()
@@ -214,7 +211,7 @@ std::string graphicInit::initProgramBackground()
     //vertex
     GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
     OM_GL_CHECK()
-            std::string_view vertex_shader_src = R"(
+    std::string_view vertex_shader_src = R"(
                                              #version 300 es
 
                                              layout(location=0)in vec4 vPosition;
@@ -232,29 +229,34 @@ std::string graphicInit::initProgramBackground()
     glShaderSource(vert_shader, 1, &source, nullptr);
     OM_GL_CHECK()
 
-            glCompileShader(vert_shader);
+    glCompileShader(vert_shader);
     OM_GL_CHECK()
 
-            GLint compiled_status = 0;
+    GLint compiled_status = 0;
     glGetShaderiv(vert_shader, GL_COMPILE_STATUS, &compiled_status);
     OM_GL_CHECK()
-            if (compiled_status == 0)
+
+    if (compiled_status == 0)
     {
         GLint info_len = 0;
         glGetShaderiv(vert_shader, GL_INFO_LOG_LENGTH, &info_len);
         OM_GL_CHECK()
-                std::vector<char> info_chars(static_cast<size_t>(info_len));
+
+        std::vector<char> info_chars(static_cast<size_t>(info_len));
         glGetShaderInfoLog(vert_shader, info_len, nullptr, info_chars.data());
         OM_GL_CHECK()
-                glDeleteShader(vert_shader);
+
+        glDeleteShader(vert_shader);
         OM_GL_CHECK()
 
-                std::string shader_type_name = "vertex";
+        std::string shader_type_name = "vertex";
         serr << "Error compiling shader(vertex)\n"
              << vertex_shader_src << "\n"
              << info_chars.data();
+
         return serr.str();
     }
+
     //fragment
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     OM_GL_CHECK()
@@ -272,39 +274,44 @@ std::string graphicInit::initProgramBackground()
                                                  frag_color = texture(s_texture, v_tex_coord);
                                                }
                           )";
-    /**/
-    source                          = fragment_shader_src.data();
+
+    source = fragment_shader_src.data();
     glShaderSource(fragment_shader, 1, &source, nullptr);
     OM_GL_CHECK()
 
-            glCompileShader(fragment_shader);
+    glCompileShader(fragment_shader);
     OM_GL_CHECK()
 
-            compiled_status = 0;
+    compiled_status = 0;
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compiled_status);
     OM_GL_CHECK()
-            if (compiled_status == 0)
+
+    if (compiled_status == 0)
     {
         GLint info_len = 0;
         glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &info_len);
         OM_GL_CHECK()
-                std::vector<char> info_chars(static_cast<size_t>(info_len));
-        glGetShaderInfoLog(
-                    fragment_shader, info_len, nullptr, info_chars.data());
-        OM_GL_CHECK()
-                glDeleteShader(fragment_shader);
+
+        std::vector<char> info_chars(static_cast<size_t>(info_len));
+
+        glGetShaderInfoLog(fragment_shader, info_len, nullptr, info_chars.data());
         OM_GL_CHECK()
 
-                serr << "Error compiling shader(fragment)\n"
-                     << vertex_shader_src << "\n"
-                     << info_chars.data();
+        glDeleteShader(fragment_shader);
+        OM_GL_CHECK()
+
+        serr << "Error compiling shader(fragment)\n"
+             << vertex_shader_src << "\n"
+             << info_chars.data();
+
         return serr.str();
     }
-    //union shaderis in one program
 
+    //union shaders in one program
     program_id_background = glCreateProgram();
     OM_GL_CHECK()
-            if (0 == program_id_background)
+
+    if (0 == program_id_background)
     {
         serr << "failed to create gl program";
         return serr.str();
@@ -312,31 +319,38 @@ std::string graphicInit::initProgramBackground()
 
     glAttachShader(program_id_background, vert_shader);
     OM_GL_CHECK()
-            glAttachShader(program_id_background, fragment_shader);
+
+    glAttachShader(program_id_background, fragment_shader);
     OM_GL_CHECK()
 
-            // bind attribute location
-            glBindAttribLocation(program_id_background, 0, "a_position");
+    // bind attribute location
+    glBindAttribLocation(program_id_background, 0, "a_position");
     OM_GL_CHECK()
-            // link program after binding attribute locations
-            glLinkProgram(program_id_background);
+
+    // link program after binding attribute locations
+    glLinkProgram(program_id_background);
     OM_GL_CHECK()
-            // Check the link status
-            GLint linked_status = 0;
+
+        // Check the link status
+    GLint linked_status = 0;
     glGetProgramiv(program_id_background, GL_LINK_STATUS, &linked_status);
     OM_GL_CHECK()
-            if (linked_status == 0)
+
+    if (linked_status == 0)
     {
         GLint infoLen = 0;
         glGetProgramiv(program_id_background, GL_INFO_LOG_LENGTH, &infoLen);
         OM_GL_CHECK()
-                std::vector<char> infoLog(static_cast<size_t>(infoLen));
+
+        std::vector<char> infoLog(static_cast<size_t>(infoLen));
         glGetProgramInfoLog(program_id_background, infoLen, nullptr, infoLog.data());
         OM_GL_CHECK()
-                serr << "Error linking program:\n" << infoLog.data();
+
+        serr << "Error linking program:\n" << infoLog.data();
         glDeleteProgram(program_id_background);
         OM_GL_CHECK()
-                return serr.str();
+
+        return serr.str();
     }
     return "";
 }
@@ -344,54 +358,65 @@ std::string graphicInit::initProgramBackground()
 std::string graphicInit::initProgramBody()
 {
     std::stringstream serr;
+
     //vertex
     GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
     OM_GL_CHECK()
-            std::string_view vertex_shader_src = R"(
+
+    std::string_view vertex_shader_src = R"(
                                              #version 300 es
-                                             uniform mat4 rot_matrix;
-                                             layout(location=0)in vec4 vPosition;
+
+                                             in vec4 vPosition;
                                              in vec2 a_tex_coord;
+
+                                             attribute mat4 rot_matrix;
+
 
                                              out vec2 v_tex_coord;
 
                                              void main()
                                              {
                                                  v_tex_coord=a_tex_coord;
-                                                 gl_Position=rot_matrix * vPosition;//vertex pos
+                                                 gl_Position=vPosition;//vertex pos
                                              }
                                         )";
     const char* source            = vertex_shader_src.data();
     glShaderSource(vert_shader, 1, &source, nullptr);
     OM_GL_CHECK()
 
-            glCompileShader(vert_shader);
+    glCompileShader(vert_shader);
     OM_GL_CHECK()
 
-            GLint compiled_status = 0;
+    GLint compiled_status = 0;
     glGetShaderiv(vert_shader, GL_COMPILE_STATUS, &compiled_status);
     OM_GL_CHECK()
-            if (compiled_status == 0)
+
+    if (compiled_status == 0)
     {
         GLint info_len = 0;
         glGetShaderiv(vert_shader, GL_INFO_LOG_LENGTH, &info_len);
         OM_GL_CHECK()
-                std::vector<char> info_chars(static_cast<size_t>(info_len));
+
+        std::vector<char> info_chars(static_cast<size_t>(info_len));
         glGetShaderInfoLog(vert_shader, info_len, nullptr, info_chars.data());
         OM_GL_CHECK()
-                glDeleteShader(vert_shader);
+
+        glDeleteShader(vert_shader);
         OM_GL_CHECK()
 
-                std::string shader_type_name = "vertex";
+        std::string shader_type_name = "vertex";
+
         serr << "Error compiling shader(vertex)\n"
              << vertex_shader_src << "\n"
              << info_chars.data();
         return serr.str();
     }
+
     //fragment
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     OM_GL_CHECK()
-            std::string_view fragment_shader_src = R"(
+
+    std::string_view fragment_shader_src = R"(
                                                #version 300 es
                                                precision mediump float;
 
@@ -404,40 +429,43 @@ std::string graphicInit::initProgramBody()
                                                {
                                                  frag_color = texture(s_texture, v_tex_coord);
                                                }
-                          )";
-    /**/
-    source                          = fragment_shader_src.data();
+    )";
+
+    source = fragment_shader_src.data();
     glShaderSource(fragment_shader, 1, &source, nullptr);
     OM_GL_CHECK()
 
-            glCompileShader(fragment_shader);
+    glCompileShader(fragment_shader);
     OM_GL_CHECK()
 
-            compiled_status = 0;
+    compiled_status = 0;
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compiled_status);
     OM_GL_CHECK()
-            if (compiled_status == 0)
+
+    if (compiled_status == 0)
     {
         GLint info_len = 0;
         glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &info_len);
         OM_GL_CHECK()
-                std::vector<char> info_chars(static_cast<size_t>(info_len));
-        glGetShaderInfoLog(
-                    fragment_shader, info_len, nullptr, info_chars.data());
-        OM_GL_CHECK()
-                glDeleteShader(fragment_shader);
+
+        std::vector<char> info_chars(static_cast<size_t>(info_len));
+        glGetShaderInfoLog(fragment_shader, info_len, nullptr, info_chars.data());
         OM_GL_CHECK()
 
-                serr << "Error compiling shader(fragment)\n"
-                     << vertex_shader_src << "\n"
-                     << info_chars.data();
+        glDeleteShader(fragment_shader);
+        OM_GL_CHECK()
+
+        serr << "Error compiling shader(fragment)\n"
+             << vertex_shader_src << "\n"
+             << info_chars.data();
         return serr.str();
     }
-    //union shaderis in one program
 
+    //union shaders in one program
     program_id_body = glCreateProgram();
     OM_GL_CHECK()
-            if (0 == program_id_body)
+
+    if (0 == program_id_body)
     {
         serr << "failed to create gl program";
         return serr.str();
@@ -445,31 +473,38 @@ std::string graphicInit::initProgramBody()
 
     glAttachShader(program_id_body, vert_shader);
     OM_GL_CHECK()
-            glAttachShader(program_id_body, fragment_shader);
+
+    glAttachShader(program_id_body, fragment_shader);
     OM_GL_CHECK()
 
-            // bind attribute location
-            glBindAttribLocation(program_id_body, 0, "a_position");
+    // bind attribute location
+    glBindAttribLocation(program_id_body, 0, "a_position");
     OM_GL_CHECK()
-            // link program after binding attribute locations
-            glLinkProgram(program_id_body);
+
+    // link program after binding attribute locations
+    glLinkProgram(program_id_body);
     OM_GL_CHECK()
-            // Check the link status
-            GLint linked_status = 0;
+
+    // Check the link status
+    GLint linked_status = 0;
     glGetProgramiv(program_id_body, GL_LINK_STATUS, &linked_status);
     OM_GL_CHECK()
-            if (linked_status == 0)
+
+    if (linked_status == 0)
     {
         GLint infoLen = 0;
         glGetProgramiv(program_id_body, GL_INFO_LOG_LENGTH, &infoLen);
         OM_GL_CHECK()
-                std::vector<char> infoLog(static_cast<size_t>(infoLen));
+
+        std::vector<char> infoLog(static_cast<size_t>(infoLen));
         glGetProgramInfoLog(program_id_body, infoLen, nullptr, infoLog.data());
         OM_GL_CHECK()
-                serr << "Error linking program:\n" << infoLog.data();
+
+        serr << "Error linking program:\n" << infoLog.data();
         glDeleteProgram(program_id_body);
         OM_GL_CHECK()
-                return serr.str();
+
+        return serr.str();
     }
 
     return "";
@@ -478,24 +513,27 @@ std::string graphicInit::initProgramBody()
 std::string graphicInit::activateProgBackground(uint8_t text_num)
 {
     glUseProgram(program_id_background);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
 
-            int location = glGetUniformLocation(program_id_background, "s_texture");
-    //OM_GL_CHECK()
-            assert(-1 != location);
+    int location = glGetUniformLocation(program_id_background, "s_texture");
+    OM_GL_CHECK()
+
+    assert(-1 != location);
     int texture_unit = text_num;//number of texture
     glActiveTexture(GL_TEXTURE0 + texture_unit);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
 
-            glUniform1i(location, 0 + texture_unit);
-    //OM_GL_CHECK()
 
-            glEnable(GL_BLEND);
-    //OM_GL_CHECK()
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //OM_GL_CHECK()
+    glUniform1i(location, 0 + texture_unit);
+    OM_GL_CHECK()
 
-            return "";
+    glEnable(GL_BLEND);
+    OM_GL_CHECK()
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    OM_GL_CHECK()
+
+    return "";
 }
 
 std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
@@ -504,153 +542,127 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
     glUseProgram(program_id_body);
     OM_GL_CHECK()
 
-            GLuint mem=glGetUniformLocation(program_id_body,"rot_matrix");
+    //---------ADDING UNIFORM MATRIX
+    //GLuint mem=glGetUniformLocation(program_id_body,"rot_matrix");
+    //OM_GL_CHECK()
+
+    //glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
+    //OM_GL_CHECK()
+    //------------------------
+
+
+    int location = glGetUniformLocation(program_id_body, "s_texture");
     OM_GL_CHECK()
 
-            glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
-    OM_GL_CHECK()
-
-
-            int location = glGetUniformLocation(program_id_body, "s_texture");
-    OM_GL_CHECK()
-            assert(-1 != location);
+    assert(-1 != location);
     int texture_unit = text_num;//number of texture
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     OM_GL_CHECK()
 
-            glUniform1i(location, 0 + texture_unit);
-    //OM_GL_CHECK()
+    glUniform1i(location, 0 + texture_unit);
+    OM_GL_CHECK()
 
     glEnable(GL_BLEND);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
 
     return "";
 }
 
-void graphicInit::render_triangle(const triangle &t)
+void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
 {
+
+
+    glBindAttribLocation(this->program_id_body,0, "vPosition");
+    glBindAttribLocation(this->program_id_body, 1, "a_tex_coord");
+    glBindAttribLocation(this->program_id_body, 2, "rot_matrix");
+
     //vertexs
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
                           &t.v[0].x);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
 
     glEnableVertexAttribArray(0);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
+
     //textures
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
                           &t.v[0].tex_x);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
     glEnableVertexAttribArray(1);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
 
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-    //OM_GL_CHECK()
 
+    glBindAttribLocation(this->program_id_body, 2, "rot_matrix");
+
+    int pos = glGetAttribLocation(this->program_id_body,"rot_matrix");
+    OM_GL_CHECK()
+
+
+    int pos1 = pos + 0;
+    int pos2 = pos + 1;
+    int pos3 = pos + 2;
+    int pos4 = pos + 3;
+
+    std::cout<<pos1<<std::endl;
+    std::cout<<pos2<<std::endl;
+    std::cout<<pos3<<std::endl;
+    std::cout<<pos4<<std::endl;
+
+
+
+/*
+    glEnableVertexAttribArray(pos1);
+    OM_GL_CHECK()
+    glEnableVertexAttribArray(pos2);
+    glEnableVertexAttribArray(pos3);
+    glEnableVertexAttribArray(pos4);
+*/
+//
+//
+//
+//
+//
+//    GLuint  vbo;
+//    glGenBuffers(1,&vbo);
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+//
+//    glVertexAttribPointer(pos1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4 , (void*)(&mat_in[0]));
+//    glVertexAttribPointer(pos2, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4 , (void*)(&mat_in[1]));
+//    glVertexAttribPointer(pos3, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4, (void*)(&mat_in[2]));
+//    glVertexAttribPointer(pos4, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4, (void*)(&mat_in[3]));
+//    glVertexAttribDivisor(pos1, 1);
+//    glVertexAttribDivisor(pos2, 1);
+//    glVertexAttribDivisor(pos3, 1);
+//    glVertexAttribDivisor(pos4, 1);
+
+
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    OM_GL_CHECK()
 }
 
 void graphicInit::renderOneColGL()
 {
     glClearColor(0.357,0.950,0.665,0.0f);
-    //OM_GL_CHECK()
-            glClear(GL_COLOR_BUFFER_BIT);
-    //OM_GL_CHECK()
+    OM_GL_CHECK()
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    OM_GL_CHECK()
 }
 
 void graphicInit::render_background(int pos)
 {
     //background
     activateProgBackground(pos);
-    render_triangle(background1);
-    render_triangle(background2);
+    //render_triangle(background1);
+    //render_triangle(background2);
 }
 
-void graphicInit::render_sprite(const sprite &t)
-{
-    render_triangle(t.triag_1);
-    render_triangle(t.triag_2);
-}
-
-void graphicInit::createTextureName(std::string &text, int position)
-{
-    //std::string text="fff";
-    int height=96;
-    gFont=TTF_OpenFont("multimarkdown_NotoSans-Bold.ttf",height);
-    if (gFont == nullptr){
-        printf( "SDL_ttf bad with openFont! "
-                "SDL_ttf Error: %s\n", TTF_GetError() );
-        SDL_Quit();
-    }
-    SDL_Surface *surf = TTF_RenderUTF8_Solid(
-                gFont,text.c_str(),{255,0,0,0}
-                );
-    if (surf == nullptr){
-        TTF_CloseFont(gFont);
-        printf( "SDL_ttf bad with TTF_RenderText_Solid! "
-                "SDL_ttf Error: %s\n", TTF_GetError() );
-    }
-
-    int w =
-            pow(2, ceil( log(surf->w)/log(2) ) );
-
-    std::cout<<surf->w<<":"<<surf->h<<" text texture - "<<w<<std::endl;
-
-    SDL_Surface* newSurface =
-            SDL_CreateRGBSurface(0, surf->w, surf->h, 24, 0xff000000, 0x00ff0000, 0x0000ff00, 0);
-    //SDL_CreateRGBSurface(0, w, w, 24, 0xff000000, 0x00ff0000, 0x0000ff00, 0);
-    SDL_BlitSurface(surf, 0, newSurface, 0);
-
-    glActiveTexture(GL_TEXTURE0+position);
-    glBindTexture(GL_TEXTURE_2D,tex_handl[position]);
-    GLint mipmap_level = 0;
-    GLint border       = 0;
-    glTexImage2D(GL_TEXTURE_2D, // type of texture
-                 mipmap_level,  //
-                 GL_RGBA,       //color format in
-                 surf->w,//texture weight
-                 surf->h,//texture height
-                 border,
-                 GL_RGBA,       // color format out(color what we want to get in opengl)
-                 GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
-                 newSurface->pixels);
-    OM_GL_CHECK()
-            //making correct color of zoomed texture
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    OM_GL_CHECK()
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    OM_GL_CHECK()
-
-            SDL_FreeSurface(surf);
-    TTF_CloseFont(gFont);
-    SDL_RenderClear(rend);
-
-}
-
-void graphicInit::createNameTetures()
-{
-    for(int i=0;i<5;i++){
-        /*createTextureName(
-                        Characters[i].nameSTR,
-                        i+1
-                        );*/
-        //Characters[i].anim.setSpeed(speed);
-
-    }
 
 
-    //get characters start positions
-    /*for(auto i:Characters){
-            std::cout<<i.posMat[3][0]<<":"<<
-                       i.posMat[3][1]<<std::endl;
-        }*/
 
-    numbers_=new numbersText(12,10);
-
-    //numbers_->setPlace(body1,body2);
-
-    //numbers_->info();
-
-
-}
 
