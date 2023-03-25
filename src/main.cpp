@@ -4,7 +4,7 @@
 int main(int argc, char *argv[]){
 
     graphicInit gr;
-    gr.load_texture("../../materials/beer.png",0);
+    gr.load_texture("../materials/beer.png",0);
     gr.initProgramBackground();
 
     imgui_init(gr.window,&gr.gl_context,gr.rend);
@@ -20,10 +20,6 @@ int main(int argc, char *argv[]){
                 break;
             }
         }
-
-
-
-
 
         gr.renderOneColGL();
         gr.render_background(0);

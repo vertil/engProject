@@ -2,9 +2,9 @@
 
 //#include "graphic/graphicinit.hxx"
 
-#include "imgui.h"
-#include "imgui_impl_sdl2.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 void imgui_init(SDL_Window* window, SDL_GLContext* gl_context,SDL_Renderer* rend){
 
