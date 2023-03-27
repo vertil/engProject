@@ -567,27 +567,7 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     OM_GL_CHECK()
 
-    //----
-//    unsigned int VAO=testVAO;
-//    glBindVertexArray(VAO);
-//
-//    glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-//    glEnableVertexAttribArray(3);
-//    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-//    glEnableVertexAttribArray(4);
-//    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
-//    glEnableVertexAttribArray(5);
-//    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
-//
-//    glVertexAttribDivisor(2, 1);
-//    glVertexAttribDivisor(3, 1);
-//    glVertexAttribDivisor(4, 1);
-//    glVertexAttribDivisor(5, 1);
-//
-//    glBindVertexArray(0);
-
-    return "";
+     return "";
 }
 
 void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
