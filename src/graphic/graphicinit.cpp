@@ -366,10 +366,9 @@ std::string graphicInit::initProgramBody()
     std::string_view vertex_shader_src = R"(
                                              #version 300 es
 
-                                             in vec4 vPosition;
-                                             in vec2 a_tex_coord;
-
-                                             attribute mat4 rot_matrix;
+                                             layout (location = 0) in vec4 vPosition;
+                                             layout (location = 1) in vec2 a_tex_coord;
+                                             layout (location = 2) in mat4 rot_matrix;
 
 
                                              out vec2 v_tex_coord;
@@ -377,7 +376,7 @@ std::string graphicInit::initProgramBody()
                                              void main()
                                              {
                                                  v_tex_coord=a_tex_coord;
-                                                 gl_Position=vPosition;//vertex pos
+                                                 gl_Position=vPosition*rot_matrix;//vertex pos
                                              }
                                         )";
     const char* source            = vertex_shader_src.data();
@@ -568,16 +567,32 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     OM_GL_CHECK()
 
+    //----
+//    unsigned int VAO=testVAO;
+//    glBindVertexArray(VAO);
+//
+//    glEnableVertexAttribArray(2);
+//    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+//    glEnableVertexAttribArray(3);
+//    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+//    glEnableVertexAttribArray(4);
+//    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+//    glEnableVertexAttribArray(5);
+//    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+//
+//    glVertexAttribDivisor(2, 1);
+//    glVertexAttribDivisor(3, 1);
+//    glVertexAttribDivisor(4, 1);
+//    glVertexAttribDivisor(5, 1);
+//
+//    glBindVertexArray(0);
+
     return "";
 }
 
 void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
 {
 
-
-    glBindAttribLocation(this->program_id_body,0, "vPosition");
-    glBindAttribLocation(this->program_id_body, 1, "a_tex_coord");
-    glBindAttribLocation(this->program_id_body, 2, "rot_matrix");
 
     //vertexs
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
@@ -591,55 +606,23 @@ void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
                           &t.v[0].tex_x);
     OM_GL_CHECK()
+
     glEnableVertexAttribArray(1);
     OM_GL_CHECK()
 
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[0]);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[1]);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[2]);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[3]);
 
-    glBindAttribLocation(this->program_id_body, 2, "rot_matrix");
-
-    int pos = glGetAttribLocation(this->program_id_body,"rot_matrix");
-    OM_GL_CHECK()
-
-
-    int pos1 = pos + 0;
-    int pos2 = pos + 1;
-    int pos3 = pos + 2;
-    int pos4 = pos + 3;
-
-    std::cout<<pos1<<std::endl;
-    std::cout<<pos2<<std::endl;
-    std::cout<<pos3<<std::endl;
-    std::cout<<pos4<<std::endl;
-
-
-
-/*
-    glEnableVertexAttribArray(pos1);
-    OM_GL_CHECK()
-    glEnableVertexAttribArray(pos2);
-    glEnableVertexAttribArray(pos3);
-    glEnableVertexAttribArray(pos4);
-*/
-//
-//
-//
-//
-//
-//    GLuint  vbo;
-//    glGenBuffers(1,&vbo);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//
-//    glVertexAttribPointer(pos1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4 , (void*)(&mat_in[0]));
-//    glVertexAttribPointer(pos2, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4 , (void*)(&mat_in[1]));
-//    glVertexAttribPointer(pos3, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4, (void*)(&mat_in[2]));
-//    glVertexAttribPointer(pos4, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 4, (void*)(&mat_in[3]));
-//    glVertexAttribDivisor(pos1, 1);
-//    glVertexAttribDivisor(pos2, 1);
-//    glVertexAttribDivisor(pos3, 1);
-//    glVertexAttribDivisor(pos4, 1);
-
-
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     OM_GL_CHECK()
@@ -661,6 +644,8 @@ void graphicInit::render_background(int pos)
     //render_triangle(background1);
     //render_triangle(background2);
 }
+
+
 
 
 

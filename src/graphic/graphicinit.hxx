@@ -15,7 +15,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <thread>
-
+#include <cstddef>
 
 //#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -79,6 +79,8 @@ public:
 
     //test matrix
     glm::mat4 testMath=glm::mat4( 1.0 );
+    glm::mat4* modelMatrices=new glm::mat4[1];
+    unsigned int testVAO, testVBO, testEBO;
 
 public:
     graphicInit();

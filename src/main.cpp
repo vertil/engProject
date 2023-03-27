@@ -23,6 +23,15 @@ int main(int argc, char *argv[]){
         if(event_log.type==SDL_KEYDOWN){
             if(event_log.key.keysym.scancode==SDL_SCANCODE_SPACE){
                 break;
+            }else if(event_log.key.keysym.scancode==SDL_SCANCODE_Q){
+                testMath*=glm::rotate(glm::mat4(1.0f),
+                                      glm::radians(45.0f),
+                                      glm::vec3(0.0f,0.0f,1.0f));
+
+            }else if(event_log.key.keysym.scancode==SDL_SCANCODE_E){
+                testMath*=glm::rotate(glm::mat4(1.0f),
+                                      glm::radians(-45.0f),
+                                      glm::vec3(0.0f,0.0f,1.0f));
             }
         }
 
