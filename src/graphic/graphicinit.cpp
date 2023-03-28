@@ -26,7 +26,7 @@ graphicInit::graphicInit()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
 
-    window=SDL_CreateWindow("ship",
+    window=SDL_CreateWindow("engProj",
                             SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED,
                             900,
@@ -366,6 +366,9 @@ std::string graphicInit::initProgramBody()
     std::string_view vertex_shader_src = R"(
                                              #version 300 es
 
+                                             uniform mat4 view;
+                                             uniform mat4 testM;
+
                                              layout (location = 0) in vec4 vPosition;
                                              layout (location = 1) in vec2 a_tex_coord;
                                              layout (location = 2) in mat4 rot_matrix;
@@ -376,7 +379,7 @@ std::string graphicInit::initProgramBody()
                                              void main()
                                              {
                                                  v_tex_coord=a_tex_coord;
-                                                 gl_Position=vPosition*rot_matrix;//vertex pos
+                                                 gl_Position=view*testM*vPosition;//vertex pos
                                              }
                                         )";
     const char* source            = vertex_shader_src.data();
@@ -542,11 +545,11 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
     OM_GL_CHECK()
 
     //---------ADDING UNIFORM MATRIX
-    //GLuint mem=glGetUniformLocation(program_id_body,"rot_matrix");
-    //OM_GL_CHECK()
+    GLuint mem=glGetUniformLocation(program_id_body,"view");
+    OM_GL_CHECK()
 
-    //glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
-    //OM_GL_CHECK()
+    glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
+    OM_GL_CHECK()
     //------------------------
 
 
@@ -567,7 +570,19 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     OM_GL_CHECK()
 
+
+
      return "";
+}
+
+std::string graphicInit::changeRotMat(glm::mat4 mat_in) {
+    GLuint mem=glGetUniformLocation(program_id_body,"testM");
+    OM_GL_CHECK()
+
+    glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
+    OM_GL_CHECK()
+
+    return "";
 }
 
 void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
@@ -624,6 +639,8 @@ void graphicInit::render_background(int pos)
     //render_triangle(background1);
     //render_triangle(background2);
 }
+
+
 
 
 

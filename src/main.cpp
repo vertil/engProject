@@ -15,30 +15,66 @@ int main(int argc, char *argv[]){
 
     SDL_Event event_log;
 
-    glm::mat4 testMath=glm::mat4( 1.0 );
-    while (true){
+    glm::mat4 testMath=glm::translate(glm::mat4(1), glm::vec3(0.0f,0.0f,0.0f));
 
-        SDL_PollEvent(&event_log);
-        ImGui_ImplSDL2_ProcessEvent(&event_log);
-        if(event_log.type==SDL_KEYDOWN){
-            if(event_log.key.keysym.scancode==SDL_SCANCODE_SPACE){
-                break;
-            }else if(event_log.key.keysym.scancode==SDL_SCANCODE_Q){
-                testMath*=glm::rotate(glm::mat4(1.0f),
-                                      glm::radians(45.0f),
-                                      glm::vec3(0.0f,0.0f,1.0f));
+    camera myCam;
+    object myObj;
+    myObj.triags.push_back(gr.background1);
+    myObj.triags.push_back(gr.background2);
 
-            }else if(event_log.key.keysym.scancode==SDL_SCANCODE_E){
-                testMath*=glm::rotate(glm::mat4(1.0f),
-                                      glm::radians(-45.0f),
-                                      glm::vec3(0.0f,0.0f,1.0f));
+
+    bool run=true;
+    while (run){
+
+        bool change=false;
+
+        while( SDL_PollEvent( &event_log ) != 0 )
+        {
+            if( event_log.type == SDL_QUIT )
+            {
+                run = false;
             }
         }
 
+        const uint8_t* state=SDL_GetKeyboardState(NULL);
+
+        if (state[SDL_SCANCODE_SPACE]){
+            run=false;
+        }
+        if (state[SDL_SCANCODE_W]){
+            myObj.pos *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, myObj.speed, 0.0f));
+        }
+        if (state[SDL_SCANCODE_A]){
+            myObj.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(myObj.angle),
+                                     glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+        if (state[SDL_SCANCODE_D]){
+            myObj.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(-myObj.angle),
+                                     glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+        if (state[SDL_SCANCODE_F]){
+            change=true;
+        }
+
+
+
+
+        int x, y;
+        SDL_GetMouseState( &x, &y );
+
+
+
 
         gr.renderOneColGL();
-        std::cout<< gr.activateProgBody(0, testMath)<<std::endl;
-        gr.render_triangle(gr.background1, testMath);
+
+        gr.activateProgBody(0, myCam.getCamera());
+        gr.changeRotMat(myObj.pos);
+        if(change){
+            gr.changeRotMat(testMath);
+        }
+        gr.render_triangle(myObj.triags[0], myObj.pos);
+        gr.render_triangle(myObj.triags[1], myObj.pos);
+
 
         //imgui part
         imgui_newframe();
@@ -50,5 +86,5 @@ int main(int argc, char *argv[]){
     }
 
     imgui_shutdown();
-return 0;
+    return 0;
 }

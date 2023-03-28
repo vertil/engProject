@@ -92,6 +92,7 @@ public:
     std::string initProgramBody();
     std::string activateProgBackground(uint8_t text_num);
     std::string activateProgBody(uint8_t text_num, glm::mat4 mat_in);
+    std::string changeRotMat(glm::mat4 mat_in);
     //render
     void render_triangle(const triangle& t, glm::mat4& mat_in);
     void renderOneColGL();
