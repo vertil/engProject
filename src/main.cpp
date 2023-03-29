@@ -4,8 +4,9 @@
 
 int main(int argc, char *argv[]){
 
-
-    graphicInit gr;
+    object myObj;
+    myObj.load_obj_file("../materials/untitled.obj");
+    /*graphicInit gr;
     gr.load_texture("../materials/beer.png",0);
     gr.initProgramBackground();
 
@@ -85,6 +86,6 @@ int main(int argc, char *argv[]){
 
     }
 
-    imgui_shutdown();
+    imgui_shutdown();*/
     return 0;
 }

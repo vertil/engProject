@@ -69,12 +69,52 @@ struct simple_triangle{
     }
     simple_vertex v[3];
 };
-struct object{
-    glm::mat4 pos= glm::translate(glm::mat4(1), glm::vec3(0.0f,0.0f,0.0f));
+struct object {
+    glm::mat4 pos = glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, 0.0f));
     std::vector<triangle> triags;
-    float speed=0.01f;
-    float angle=1.0f;
+    float speed = 0.01f;
+    float angle = 1.0f;
+
+    bool load_obj_file(const char *filename) {
+        std::vector<glm::vec3> points;
+        std::vector<glm::vec2> textures;
+
+
+        std::ifstream in(filename, std::ios::in);
+        if (!in) {
+            std::cerr << "Cannot open " << filename << std::endl;
+            return false;
+        }
+        std::string line;
+        while (std::getline(in, line)) {
+            if (line.substr(0, 2) == "v ") {
+                std::cout<< line<<std::endl;
+                std::istringstream v(line.substr(2));
+                float x, y, z;
+                v >> x;
+                v >> y;
+                v >> z;
+                points.push_back({x,y,z});
+            } else if (line.substr(0, 2) == "vt") {
+                std::istringstream v(line.substr(3));
+                float U, V;
+                v >> U;
+                v >> V;
+                textures.push_back({U,V});
+
+            }
+        }
+        for (auto i: points) {
+            std::cout << i.x << ":" << i.y << ":" << i.z << std::endl;
+        }
+        for (auto i: textures) {
+            std::cout << i.x << ":" << i.y << std::endl;
+        }
+        return true;
+    }
+
 };
+
 struct camera{
     glm::vec3 CamPos=glm::vec3(0.0f, 0.0f, 0.0f);;
     glm::vec3 CamFront=glm::vec3(0.0f, 0.0f, -1.0f);
