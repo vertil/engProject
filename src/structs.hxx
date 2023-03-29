@@ -95,6 +95,14 @@ struct object {
                 v >> y;
                 v >> z;
                 points.push_back({x,y,z});
+            }else if (line.substr(0, 3) == "vn ") {
+                std::cout<< line<<std::endl;
+                std::istringstream v(line.substr(2));
+                float x, y, z;
+                v >> x;
+                v >> y;
+                v >> z;
+                points.push_back({x,y,z});
             } else if (line.substr(0, 2) == "vt") {
                 std::istringstream v(line.substr(3));
                 float U, V;
@@ -107,9 +115,9 @@ struct object {
         for (auto i: points) {
             std::cout << i.x << ":" << i.y << ":" << i.z << std::endl;
         }
-        for (auto i: textures) {
+        /*for (auto i: textures) {
             std::cout << i.x << ":" << i.y << std::endl;
-        }
+        }*/
         return true;
     }
 
