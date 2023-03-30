@@ -88,33 +88,57 @@ struct object {
         std::string line;
         while (std::getline(in, line)) {
             if (line.substr(0, 2) == "v ") {
-                std::cout<< line<<std::endl;
+                std::cout << line << std::endl;
                 std::istringstream v(line.substr(2));
                 float x, y, z;
                 v >> x;
                 v >> y;
                 v >> z;
-                points.push_back({x,y,z});
-            }else if (line.substr(0, 3) == "vn ") {
-                std::cout<< line<<std::endl;
-                std::istringstream v(line.substr(2));
-                float x, y, z;
-                v >> x;
-                v >> y;
-                v >> z;
-                points.push_back({x,y,z});
-            } else if (line.substr(0, 2) == "vt") {
+                points.push_back({x, y, z});
+            }else if (line.substr(0, 2) == "vt") {
                 std::istringstream v(line.substr(3));
                 float U, V;
                 v >> U;
                 v >> V;
                 textures.push_back({U,V});
 
+            }else if (line.substr(0, 2) == "f ") {
+                std::istringstream v(line.substr(2));
+                int v1,v2,v3;
+                int t1,t2,t3;
+
+                const char* chh=line.c_str();
+                sscanf (chh, "f %i/%i %i/%i %i/%i",&v1,&t1,&v2,&t2,&v3,&t3);
+
+                v1--;
+                v2--;
+                v3--;
+                t1--;
+                t2--;
+                t3--;
+
+                triangle buff;
+                buff.v[0].x=points[v1].x;
+                buff.v[0].y=points[v1].y;
+                buff.v[0].tex_x=textures[t1].x;
+                buff.v[0].tex_y=textures[t1].y;
+
+                buff.v[1].x=points[v2].x;
+                buff.v[1].y=points[v2].y;
+                buff.v[1].tex_x=textures[t2].x;
+                buff.v[1].tex_y=textures[t2].y;
+
+                buff.v[2].x=points[v3].x;
+                buff.v[2].y=points[v3].y;
+                buff.v[2].tex_x=textures[t3].x;
+                buff.v[2].tex_y=textures[t3].y;
+
+                this->triags.push_back(buff);
             }
         }
-        for (auto i: points) {
+        /*for (auto i: points) {
             std::cout << i.x << ":" << i.y << ":" << i.z << std::endl;
-        }
+        }*/
         /*for (auto i: textures) {
             std::cout << i.x << ":" << i.y << std::endl;
         }*/

@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 
     object myObj;
     myObj.load_obj_file("../materials/untitled.obj");
-    /*graphicInit gr;
+    graphicInit gr;
     gr.load_texture("../materials/beer.png",0);
     gr.initProgramBackground();
 
@@ -19,9 +19,9 @@ int main(int argc, char *argv[]){
     glm::mat4 testMath=glm::translate(glm::mat4(1), glm::vec3(0.0f,0.0f,0.0f));
 
     camera myCam;
-    object myObj;
-    myObj.triags.push_back(gr.background1);
-    myObj.triags.push_back(gr.background2);
+    //object myObj;
+    //myObj.triags.push_back(gr.background1);
+    //myObj.triags.push_back(gr.background2);
 
 
     bool run=true;
@@ -56,7 +56,14 @@ int main(int argc, char *argv[]){
         if (state[SDL_SCANCODE_F]){
             change=true;
         }
-
+        if (state[SDL_SCANCODE_E]){
+            myObj.pos *= glm::scale(glm::mat4(1.0f),
+                                     glm::vec3(2.0f, 2.0f, 0.0f));
+        }
+        if (state[SDL_SCANCODE_Q]){
+            myObj.pos *= glm::scale(glm::mat4(1.0f),
+                                    glm::vec3(0.5f, 0.5f, 0.0f));
+        }
 
 
 
@@ -67,14 +74,16 @@ int main(int argc, char *argv[]){
 
 
         gr.renderOneColGL();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         gr.activateProgBody(0, myCam.getCamera());
         gr.changeRotMat(myObj.pos);
         if(change){
             gr.changeRotMat(testMath);
         }
-        gr.render_triangle(myObj.triags[0], myObj.pos);
-        gr.render_triangle(myObj.triags[1], myObj.pos);
+        for (int i=0;i<myObj.triags.size();i++)
+            gr.render_triangle(myObj.triags[i], myObj.pos);
+
 
 
         //imgui part
@@ -86,6 +95,6 @@ int main(int argc, char *argv[]){
 
     }
 
-    imgui_shutdown();*/
+    imgui_shutdown();
     return 0;
 }

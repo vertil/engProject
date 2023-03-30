@@ -115,6 +115,8 @@ graphicInit::graphicInit()
     OM_GL_CHECK()
 
 
+
+
     gl_context=SDL_GL_CreateContext(window);
 
     SDL_ShowCursor(SDL_ENABLE);
@@ -508,6 +510,8 @@ std::string graphicInit::initProgramBody()
 
         return serr.str();
     }
+
+    glEnable(GL_DEPTH_TEST);
 
     return "";
 }
