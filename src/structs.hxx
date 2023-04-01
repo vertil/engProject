@@ -37,6 +37,11 @@ struct  vertex{
     float tex_x=0.f;
     float tex_y=0.f;
 
+    std::string getInfo(){
+        return std::to_string(x)+":"+ std::to_string(y)+
+        "|"+ std::to_string(tex_x)+":"+std::to_string(tex_y);
+    }
+
 };
 
 struct  triangle
@@ -48,6 +53,9 @@ struct  triangle
         v[2] = vertex();
     }
     vertex v[3];
+    std::string getInfo(){
+        return v[0].getInfo()+"\n"+v[1].getInfo()+"\n"+v[2].getInfo();
+    }
 };
 
 
@@ -96,6 +104,7 @@ struct object {
                 v >> z;
                 points.push_back({x, y, z});
             }else if (line.substr(0, 2) == "vt") {
+                std::cout << line << std::endl;
                 std::istringstream v(line.substr(3));
                 float U, V;
                 v >> U;
@@ -103,6 +112,8 @@ struct object {
                 textures.push_back({U,V});
 
             }else if (line.substr(0, 2) == "f ") {
+                std::cout << line << std::endl;
+
                 std::istringstream v(line.substr(2));
                 int v1,v2,v3;
                 int t1,t2,t3;
@@ -136,12 +147,7 @@ struct object {
                 this->triags.push_back(buff);
             }
         }
-        /*for (auto i: points) {
-            std::cout << i.x << ":" << i.y << ":" << i.z << std::endl;
-        }*/
-        /*for (auto i: textures) {
-            std::cout << i.x << ":" << i.y << std::endl;
-        }*/
+
         return true;
     }
 

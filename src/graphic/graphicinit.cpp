@@ -580,6 +580,7 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
 }
 
 std::string graphicInit::changeRotMat(glm::mat4 mat_in) {
+
     GLuint mem=glGetUniformLocation(program_id_body,"testM");
     OM_GL_CHECK()
 
