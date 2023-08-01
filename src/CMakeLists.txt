@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.18)
 project(engine_project CXX C)
 
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
 #set(ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
 #set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
 #set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../build)
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../build)
+#set(CMAKE_BUILD ${CMAKE_CURRENT_SOURCE_DIR}/../build)
 
 
 # Add SDL2 CMake modules
@@ -63,4 +65,30 @@ target_link_libraries(engine_pr PRIVATE lodepng)
 
 target_compile_features(engine_pr PUBLIC cxx_std_20)
 
+#macro(download_dll APP DLL)
+#    # find the release *.dll file
+#    get_target_property(${DLL}Location SDL2::${DLL} LOCATION)
 
+#    add_custom_command(TARGET ${APP} POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#            $<$<CONFIG:Debug>:${${DLL}LocationDebug}>
+#            $<$<NOT:$<CONFIG:Debug>>:${${DLL}Location}>
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../build>)
+#endmacro()
+
+#download_dll(engine_pr Image)
+get_filename_component(Location ${SDL2_IMAGE_LIBRARIES} NAME)
+#if (WIN32)
+#    add_custom_command(
+#            TARGET engine_pr POST_BUILD
+#            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+#            ${Location}
+#            "$<TARGET_FILE_DIR:engine_pr>"
+#            VERBATIM
+#    )
+#endif()
+string(REPLACE lib "" Location ${Location})
+string(REPLACE dll.a "dll" Location ${Location})
+message("${Location}")
+message(${SDL2_LIBRARY})
+message(${SDL2_LIBRARIES})
