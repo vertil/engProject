@@ -8,5 +8,8 @@ pacman -S mingw64/mingw-w64-x86_64-ninja
 
 For release just use dlls from sdl's github
 
+// Удалить все проиндексированные файлы\
+git rm -r -f --cached .
+
 
 
