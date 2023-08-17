@@ -1,4 +1,2 @@
 build-cmake 
-src/.idea/
-
-
+/src/.idea/
