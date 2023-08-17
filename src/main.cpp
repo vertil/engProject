@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     //myObj.triags.push_back(gr.background1);
     //myObj.triags.push_back(gr.background2);
 
-
+    gr.activateProgBody(0, myCam.getCamera());
     bool run=true;
     while (run){
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
         gr.renderOneColGL();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        gr.activateProgBody(0, myCam.getCamera());
+
         gr.changeRotMat(myObj.pos);
         if(change){
             gr.changeRotMat(testMath);

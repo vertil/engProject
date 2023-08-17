@@ -21,17 +21,17 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 //glm
-#include "../glm/glm.hpp"
-#include "../glm/gtc/matrix_transform.hpp"
-#include "../glm/gtc/type_ptr.hpp"
+#include "../foundation/glm/glm.hpp"
+#include "../foundation/glm/gtc/matrix_transform.hpp"
+#include "../foundation/glm/gtc/type_ptr.hpp"
 //other
-#include "../structs.hxx"
+#include "../objects/structs.hxx"
 #include "../animation.hxx"
-#include "../numbers.hxx"
-#include "../lodepng.h"
+#include "../objects/numbers.hxx"
+#include "../foundation/lodepng.h"
 //
 //#include "../myimgui.h"
-#include "../glad/glad.h"
+#include "../foundation/glad/glad.h"
 
 
 static void APIENTRY callback_opengl_debug(

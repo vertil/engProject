@@ -1,5 +1,5 @@
 #pragma once
-#include "structs.hxx"
+#include "objects/structs.hxx"
 #include <vector>
 #include <cstdint>
 #include <iostream>
