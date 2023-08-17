@@ -157,7 +157,7 @@ struct camera{
     glm::vec3 CamPos=glm::vec3(0.0f, 0.0f, 0.0f);;
     glm::vec3 CamFront=glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 CamUP=glm::vec3(0.0f, 1.0f, 0.0f);
-    float CamSpeed=0.2f;
+    float CamSpeed=0.001f;
     glm::mat4 Camera=glm::mat4(1.0f);
     glm::mat4& getCamera(){
         this->Camera=glm::lookAt(this->CamPos, this->CamPos+this->CamFront, this->CamUP);
@@ -169,9 +169,13 @@ struct camera{
     void right(){
         this->CamPos+=glm::normalize(glm::cross(this->CamFront,this->CamUP))*CamSpeed;
     }
-    void move(float x, float y){
-
+    void up(){
+        //this->CamPos+=glm::normalize(glm::cross(glm::vec3(0.0f,0.),this->CamUP))*CamSpeed;
     }
+    void down(){
+        //this->CamPos-=CamSpeed*this->CamFront;
+    }
+
 };
 
 

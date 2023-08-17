@@ -32,13 +32,16 @@ void imgui_init(SDL_Window* window, SDL_GLContext* gl_context,SDL_Renderer* rend
 }
 void imgui_newframe(){
     ImGui_ImplOpenGL3_NewFrame();
-    //ImGui_ImplSDL2_NewFrame(window);
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 }
-void imgui_window(){
+void imgui_window(int&x,int&y){
     ImGui::Begin("Window");
-    ImGui::Text("sadfsafaf");
+    //ImGui::SliderInt("x",&x,0,900);
+    //ImGui::SliderInt("y",&y,0,900);
+    ImGui::Text("sadfsafa" );
+    ImGui::Text("sadfsafa" );
+    ImGui::Text("sadfsafa" );
     ImGui::End();
 
 }

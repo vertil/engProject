@@ -11,5 +11,14 @@ For release just use dlls from sdl's github
 // Удалить все проиндексированные файлы\
 git rm -r -f --cached .
 
+send event_log to imgui right after sdl_poll_event:\
+while( SDL_PollEvent( &event_log ) != 0 )
+{\
+    ImGui_ImplSDL2_ProcessEvent(&event_log);\
+.....
+
+
+
+
 
 

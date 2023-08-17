@@ -23,7 +23,6 @@ int main(int argc, char *argv[]){
     //myObj.triags.push_back(gr.background1);
     //myObj.triags.push_back(gr.background2);
 
-    gr.activateProgBody(0, myCam.getCamera());
     bool run=true;
     while (run){
 
@@ -31,11 +30,15 @@ int main(int argc, char *argv[]){
 
         while( SDL_PollEvent( &event_log ) != 0 )
         {
+            ImGui_ImplSDL2_ProcessEvent(&event_log);
+
             if( event_log.type == SDL_QUIT )
             {
                 run = false;
             }
         }
+
+
 
         const uint8_t* state=SDL_GetKeyboardState(NULL);
 
@@ -70,6 +73,19 @@ int main(int argc, char *argv[]){
         int x, y;
         SDL_GetMouseState( &x, &y );
 
+        if(x<200){
+            myCam.left();
+        }else if(x>700){
+            myCam.right();
+        }
+        if(y<200){
+            myCam.up();
+        }else if(y>700){
+            myCam.down();
+        }
+
+
+        gr.activateProgBody(0, myCam.getCamera());
 
 
 
@@ -88,7 +104,7 @@ int main(int argc, char *argv[]){
 
         //imgui part
         imgui_newframe();
-        imgui_window();
+        imgui_window(x,y);
         imgui_render();
 
         gr.swapBuffers();
