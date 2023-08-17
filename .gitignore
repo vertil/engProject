@@ -1,7 +1,4 @@
 build-cmake 
-src/lazy.ttf
-src/cmake-build-debug
-src/imgui-master.zip
-.idea/
-src/CMakeLists.txt.user
+src/.idea/
+
 
