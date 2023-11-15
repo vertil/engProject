@@ -1,8 +1,8 @@
 #pragma once
-#include "objects/structs.hxx"
 #include <vector>
 #include <cstdint>
 #include <iostream>
+#include "objects/structs.hxx"
 
 class animation{
     //vector of all sprites

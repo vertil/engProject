@@ -1,32 +1,53 @@
 #include "graphic/graphicinit.hxx"
 #include "myimgui.h"
 #include "iostream"
+#include "objects/basicCamera.h"
+
+#include "objects/basicPerson.h"
+
+
+
+
 
 int main(int argc, char *argv[]){
 
-    object myObj;
-    myObj.load_obj_file("../materials/untitled.obj");
+
     graphicInit gr;
-    gr.load_texture("../materials/beer.png",0);
+    basicObject myObj;
+    basicPerson myPers=basicPerson(&myObj);
+    myObj.load_obj_file("../materials/cat_triag.obj");
+    gr.load_texture("../materials/beerold.png",0);
+    gr.load_texture("../materials/Cat_diffuse.jpg",1);
+    gr.load_texture("../materials/black.png",2);
+
     gr.initProgramBackground();
 
     std::cout<< gr.initProgramBody()<<std::endl;
 
+    GLboolean last_enable_depth_test1 = glIsEnabled(GL_DEPTH_TEST);
+
+
     imgui_init(gr.window,&gr.gl_context,gr.rend);
+
+    GLboolean last_enable_depth_test2 = glIsEnabled(GL_DEPTH_TEST);
+
+    GLboolean def = GL_TRUE;
 
     SDL_Event event_log;
 
-    glm::mat4 testMath=glm::translate(glm::mat4(1), glm::vec3(0.0f,0.0f,0.0f));
 
-    camera myCam;
-    //object myObj;
-    //myObj.triags.push_back(gr.background1);
-    //myObj.triags.push_back(gr.background2);
+
+    basicCamera myCam;
+
+    int triags=0;
 
     bool run=true;
-    while (run){
+    bool change=false;
 
-        bool change=false;
+
+
+    std::string info= myObj.triags[0].getInfo();
+    while (run){
 
         while( SDL_PollEvent( &event_log ) != 0 )
         {
@@ -39,33 +60,54 @@ int main(int argc, char *argv[]){
         }
 
 
-
         const uint8_t* state=SDL_GetKeyboardState(NULL);
 
         if (state[SDL_SCANCODE_SPACE]){
+            std::cout<<"dfa";
             run=false;
         }
-        if (state[SDL_SCANCODE_W]){
-            myObj.pos *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, myObj.speed, 0.0f));
-        }
+//        if (state[SDL_SCANCODE_W]){
+//            myObj.pos *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, myObj.speed, 0.0f));
+//        }
         if (state[SDL_SCANCODE_A]){
-            myObj.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(myObj.angle),
+            myPers.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(myObj.angle),
                                      glm::vec3(0.0f, 0.0f, 1.0f));
         }
         if (state[SDL_SCANCODE_D]){
-            myObj.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(-myObj.angle),
+            myPers.pos *= glm::rotate(glm::mat4(1.0f), glm::radians(-myObj.angle),
                                      glm::vec3(0.0f, 0.0f, 1.0f));
         }
-        if (state[SDL_SCANCODE_F]){
-            change=true;
-        }
+//        if (state[SDL_SCANCODE_F]){
+//            change= !change;
+//            for (int i=0;i<100000;){
+//                i++;
+//            }
+//        }
         if (state[SDL_SCANCODE_E]){
-            myObj.pos *= glm::scale(glm::mat4(1.0f),
-                                     glm::vec3(2.0f, 2.0f, 0.0f));
+            myCam.forward();
         }
         if (state[SDL_SCANCODE_Q]){
-            myObj.pos *= glm::scale(glm::mat4(1.0f),
-                                    glm::vec3(0.5f, 0.5f, 0.0f));
+            myCam.backward();
+
+        }
+
+//        if (state[SDL_SCANCODE_UP]){
+//            glm::mat4 buff=glm::mat4(1.0f);
+//            myObj.pos *= glm::rotate(buff, glm::radians(-2.0f), glm::vec3(1.0, 0.0, 0.0));
+//        }
+//        if (state[SDL_SCANCODE_DOWN]){
+//            glm::mat4 buff=glm::mat4(1.0f);
+//            myObj.pos *= glm::rotate(buff, glm::radians(2.0f), glm::vec3(1.0, 0.0, 0.0));
+//
+//        }
+        if (state[SDL_SCANCODE_LEFT]){
+            glm::mat4 buff=glm::mat4(1.0f);
+            myPers.pos *= glm::rotate(buff, glm::radians(-2.0f), glm::vec3(0.0, 1.0, 0.0));
+        }
+        if (state[SDL_SCANCODE_RIGHT]){
+            glm::mat4 buff=glm::mat4(1.0f);
+            myPers.pos *= glm::rotate(buff, glm::radians(2.0f), glm::vec3(0.0, 1.0, 0.0));
+
         }
 
 
@@ -73,38 +115,32 @@ int main(int argc, char *argv[]){
         int x, y;
         SDL_GetMouseState( &x, &y );
 
-        if(x<200){
-            myCam.left();
-        }else if(x>700){
-            myCam.right();
-        }
-        if(y<200){
-            myCam.up();
-        }else if(y>700){
-            myCam.down();
-        }
-
-
-        gr.activateProgBody(0, myCam.getCamera());
-
 
 
         gr.renderOneColGL();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        gr.changeRotMat(myObj.pos);
-        if(change){
-            gr.changeRotMat(testMath);
-        }
-        for (int i=0;i<myObj.triags.size();i++)
-            gr.render_triangle(myObj.triags[i], myObj.pos);
+
+        gr.activateProgBody(1 ,myCam.getCamera());
+
+        gr.changeRotMat(myPers.pos);
+
+        glm::mat4 projection;
+        projection = glm::perspective(45.0f,1.0f, 0.1f, 10000.0f);
+        gr.changeProj(projection);
+
+
+        gr.render_triangle3dVAO(myObj);
+
 
 
 
         //imgui part
         imgui_newframe();
-        imgui_window(x,y);
+        std::string text1=glm::to_string(myPers.pos);
+        std::string text2=glm::to_string(myCam.getCamera());
+        imgui_window(x,y, triags,text1,text2);
         imgui_render();
 
         gr.swapBuffers();

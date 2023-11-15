@@ -23,7 +23,8 @@ graphicInit::graphicInit()
     }
 
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    int resulteee = SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+
 
 
     window=SDL_CreateWindow("engProj",
@@ -39,7 +40,7 @@ graphicInit::graphicInit()
         SDL_DestroyWindow(window);
     }
 
-    rend=SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED
+    rend=SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE
                             | SDL_RENDERER_PRESENTVSYNC
                             | SDL_RENDERER_TARGETTEXTURE);
     if(rend==NULL){
@@ -59,6 +60,8 @@ graphicInit::graphicInit()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_context_profile);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major_ver);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor_ver);
+
+
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr)
@@ -102,22 +105,26 @@ graphicInit::graphicInit()
         std::clog << "error: failed to ialize glad" << std::endl;
     }
 
-    if (platform != "Mac OS X") // not supported on Mac
-    {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(callback_opengl_debug, nullptr);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,
-                              nullptr, GL_TRUE);
-    }
+
 
     glGenTextures(20, tex_handl); //texture descriptor
     OM_GL_CHECK()
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,32);
+    //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 
+    glEnable(GL_DEPTH_TEST);
 
+    glDepthFunc(GL_LEQUAL );
 
-    gl_context=SDL_GL_CreateContext(window);
+    glDepthMask(GL_TRUE);
+
+    //show and hide sided of vertex to viewer
+    glEnable(GL_CULL_FACE);
+    //glDepthRangef(0.0,0.001);
+    //glFrontFace(GL_CCW); //that is default
+    //glCullFace(GL_FRONT);
+
 
     SDL_ShowCursor(SDL_ENABLE);
 
@@ -125,38 +132,44 @@ graphicInit::graphicInit()
     background1.v[0].x=-1;
     background1.v[0].y=-1;
     background1.v[0].tex_x=0.0;
-    background1.v[0].tex_y=1.0;
+    background1.v[0].tex_y=0.0;
+
     //2
     background1.v[1].x=-1;
     background1.v[1].y=1;
     background1.v[1].tex_x=0.0;
-    background1.v[1].tex_y=0.0;
+    background1.v[1].tex_y=1.0;
+
     //3
     background1.v[2].x=1;
     background1.v[2].y=-1;
     background1.v[2].tex_x=1.0;
-    background1.v[2].tex_y=1.0;
+    background1.v[2].tex_y=0.0;
+
     //
     background2.v[0].x=-1;
     background2.v[0].y=1;
     background2.v[0].tex_x=0.0;
-    background2.v[0].tex_y=0.0;
+    background2.v[0].tex_y=1.0;
+
     //2
     background2.v[1].x=1;
     background2.v[1].y=1;
-    background2.v[1].tex_x=1.0;
-    background2.v[1].tex_y=0.0;
+
+    background2.v[1].tex_x=1;
+    background2.v[1].tex_y=1;
     //3
     background2.v[2].x=1;
     background2.v[2].y=-1;
     background2.v[2].tex_x=1.0;
-    background2.v[2].tex_y=1.0;
+    background2.v[2].tex_y=0.0;
+
 
 }
 
 graphicInit::~graphicInit()
 {
-    delete numbers_;
+    //delete numbers_;
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(window);
     window=NULL;
@@ -166,32 +179,86 @@ graphicInit::~graphicInit()
     SDL_Quit();
 }
 
-bool graphicInit::load_texture(std::string_view path, int number)
+bool graphicInit::load_texture(std::string path, int number)
 {
-    const char* filename=&path[0];
-    std::vector<unsigned char> image;
-    unsigned int          w = 0;
-    unsigned int          h = 0;
-    int error = lodepng::decode(image,w,h,filename);
-    /*GLuint tex_handl = 0;
-        glGenTextures(1, &tex_handl); //texture descriptor
-        OM_GL_CHECK()
-        glBindTexture(GL_TEXTURE_2D, tex_handl);
-        OM_GL_CHECK()*/
+    SDL_Surface* surf;
+    GLenum textureFormat;
+    GLint bpp;
+
+    surf = IMG_Load(path.c_str());
+    if (surf == nullptr) {
+        std::string msg("IMG error: ");
+        msg += IMG_GetError();
+        throw std::runtime_error(msg.c_str());
+    }
+    switch (surf->format->BytesPerPixel)
+    {
+        case 4:
+            if (surf->format->Rmask == 0x000000ff)
+                bpp = GL_RGBA;
+            else
+                bpp = GL_RGBA;
+            break;
+        case 3:
+            if (surf->format->Rmask == 0x000000ff)
+                bpp = GL_RGB;
+            else
+                bpp = GL_RGB;
+            break;
+        default:
+            std::cout << "Error, image is not truecolor." << std::endl;
+
+    }
+
+    //mirror
+    SDL_LockSurface(surf);
+    int pitch = surf->pitch; // row size
+    char* temp = new char[pitch]; // intermediate buffer
+    char* pixels = (char*) surf->pixels;
+
+    for(int i = 0; i < surf->h / 2; ++i) {
+        // get pointers to the two rows to swap
+        char* row1 = pixels + i * pitch;
+        char* row2 = pixels + (surf->h - i - 1) * pitch;
+
+        // swap rows
+        memcpy(temp, row1, pitch);
+        memcpy(row1, row2, pitch);
+        memcpy(row2, temp, pitch);
+    }
+
+    delete[] temp;
+
+    SDL_UnlockSurface(surf);
+    //end mirror
+
     glActiveTexture(GL_TEXTURE0+number);
     glBindTexture(GL_TEXTURE_2D,tex_handl[number]);
-    GLint mipmap_level = 0;
-    GLint border       = 0;
-    glTexImage2D(GL_TEXTURE_2D, // type of texture
-                 mipmap_level,  //
-                 GL_RGBA,       //color format in
-                 static_cast<GLsizei>(w),//texture weight
-                 static_cast<GLsizei>(h),//texture height
-                 border,
-                 GL_RGBA,       // color format out(color what we want to get in opengl)
-                 GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
-                 &image[0]);
-    OM_GL_CHECK()
+
+
+    if(surf == NULL || surf == nullptr )
+    {
+        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
+
+    }else{
+        GLint mipmap_level = 0;
+        GLint border       = 0;
+
+        glTexImage2D(GL_TEXTURE_2D, // type of texture
+                     mipmap_level,  //
+                     bpp,       //color format in
+                     surf->w,//texture weight
+                     surf->h,//texture height
+                     border,
+                     bpp,       // color format out(color what we want to get in opengl)
+                     GL_UNSIGNED_BYTE, // Specifies the data type of the texel data
+                     surf->pixels);
+
+        OM_GL_CHECK()
+
+    }
+    SDL_FreeSurface(surf );
+
 
     //making correct color of zoomed texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -199,12 +266,17 @@ bool graphicInit::load_texture(std::string_view path, int number)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     OM_GL_CHECK()
 
+
+
+    //SDL_FreeSurface( surf );
+
     return true;
 }
 
 void graphicInit::swapBuffers()
 {
     SDL_GL_SwapWindow(window);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 std::string graphicInit::initProgramBackground()
@@ -369,11 +441,14 @@ std::string graphicInit::initProgramBody()
                                              #version 300 es
 
                                              uniform mat4 view;
-                                             uniform mat4 testM;
+                                             uniform mat4 worldPos;
+                                             uniform mat4 Proj;
 
-                                             layout (location = 0) in vec4 vPosition;
+
+
+                                             layout (location = 0) in vec3 vPosition;
                                              layout (location = 1) in vec2 a_tex_coord;
-                                             layout (location = 2) in mat4 rot_matrix;
+                                             //layout (location = 2) in mat4 rot_matrix;
 
 
                                              out vec2 v_tex_coord;
@@ -381,7 +456,7 @@ std::string graphicInit::initProgramBody()
                                              void main()
                                              {
                                                  v_tex_coord=a_tex_coord;
-                                                 gl_Position=view*testM*vPosition;//vertex pos
+                                                 gl_Position=Proj*view*worldPos*vec4(vPosition,1.0f);//vertex pos
                                              }
                                         )";
     const char* source            = vertex_shader_src.data();
@@ -511,13 +586,14 @@ std::string graphicInit::initProgramBody()
         return serr.str();
     }
 
-    glEnable(GL_DEPTH_TEST);
+
 
     return "";
 }
 
 std::string graphicInit::activateProgBackground(uint8_t text_num)
 {
+
     glUseProgram(program_id_background);
     OM_GL_CHECK()
 
@@ -544,6 +620,7 @@ std::string graphicInit::activateProgBackground(uint8_t text_num)
 
 std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
 {
+
     // turn on rendering with just created shader program
     glUseProgram(program_id_body);
     OM_GL_CHECK()
@@ -581,7 +658,18 @@ std::string graphicInit::activateProgBody(uint8_t text_num, glm::mat4 mat_in)
 
 std::string graphicInit::changeRotMat(glm::mat4 mat_in) {
 
-    GLuint mem=glGetUniformLocation(program_id_body,"testM");
+    GLuint mem=glGetUniformLocation(program_id_body,"worldPos");
+    OM_GL_CHECK()
+
+    glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
+    OM_GL_CHECK()
+
+    return "";
+}
+
+std::string graphicInit::changeProj(glm::mat4 mat_in){
+
+    GLuint mem=glGetUniformLocation(program_id_body,"Proj");
     OM_GL_CHECK()
 
     glUniformMatrix4fv(mem,1,GL_FALSE,glm::value_ptr(mat_in));
@@ -592,8 +680,6 @@ std::string graphicInit::changeRotMat(glm::mat4 mat_in) {
 
 void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
 {
-
-
     //vertexs
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
                           &t.v[0].x);
@@ -627,6 +713,109 @@ void graphicInit::render_triangle(const triangle &t, glm::mat4& mat_in)
     glDrawArrays(GL_TRIANGLES, 0, 3);
     OM_GL_CHECK()
 }
+void graphicInit::render_triangle3d(const triangle3d &t, glm::mat4& mat_in)
+{
+
+
+    //vertexs
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex3d),
+                          &t.v[0].x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(0);
+    OM_GL_CHECK()
+
+    //textures
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex3d),
+                          &t.v[0].tex_x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(1);
+    OM_GL_CHECK()
+
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    OM_GL_CHECK()
+}
+
+void graphicInit::render_triangle3dVAO(const basicObject &t)
+{
+
+    glBindVertexArray(t.VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(t.pointsAll.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+}
+
+void graphicInit::render_line_triangle(const triangle& t, glm::mat4& mat_in){
+    //vertexs
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
+                          &t.v[0].x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(0);
+    OM_GL_CHECK()
+
+    //textures
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex),
+                          &t.v[0].tex_x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(1);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[0]);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[1]);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[2]);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[3]);
+
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+
+    glDrawArrays(GL_LINE_LOOP, 0, 3);
+    OM_GL_CHECK()
+}
+
+void graphicInit::render_line_triangle3d(const triangle3d& t, glm::mat4& mat_in){
+    //vertexs
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex3d),
+                          &t.v[0].x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(0);
+    OM_GL_CHECK()
+
+    //textures
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex3d),
+                          &t.v[0].tex_x);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(1);
+    OM_GL_CHECK()
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[0]);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[1]);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[2]);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)&mat_in[3]);
+
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+
+    glDrawArrays(GL_LINE_LOOP, 0, 3);
+    OM_GL_CHECK()
+}
 
 void graphicInit::renderOneColGL()
 {
@@ -637,12 +826,13 @@ void graphicInit::renderOneColGL()
     OM_GL_CHECK()
 }
 
-void graphicInit::render_background(int pos)
+void graphicInit::render_background(int pos, glm::mat4& mat_in )
 {
     //background
     activateProgBackground(pos);
-    //render_triangle(background1);
-    //render_triangle(background2);
+    glm::mat4 buff = glm::mat4( 1.0 );
+    render_triangle(background1, mat_in);
+    render_triangle(background2, mat_in);
 }
 
 

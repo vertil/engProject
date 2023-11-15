@@ -23,10 +23,6 @@ add_library(glad SHARED
             foundation/glad/glad.c)
 target_compile_features(glad PUBLIC cxx_std_17)
 
-add_library(lodepng SHARED
-                    foundation/lodepng.cpp
-                    foundation/lodepng.h)
-target_compile_features(lodepng PUBLIC cxx_std_17)
 
 add_executable(engine_pr
                             main.cpp
@@ -36,7 +32,7 @@ add_executable(engine_pr
                             myimgui.h
                             animation.hxx
                             objects/numbers.hxx
-                            )
+        objects/basicPerson.cpp objects/basicPerson.h objects/basicObject.cpp objects/basicObject.h objects/basicCamera.cpp objects/basicCamera.h)
 
 # Add SDL2 library
 find_package(SDL2 REQUIRED )
@@ -52,7 +48,6 @@ target_link_libraries(engine_pr PUBLIC SDL2::Image)
 
 target_link_libraries(engine_pr PUBLIC imgui)
 target_link_libraries(engine_pr PRIVATE glad)
-target_link_libraries(engine_pr PRIVATE lodepng)
 
 target_compile_features(engine_pr PUBLIC cxx_std_20)
 

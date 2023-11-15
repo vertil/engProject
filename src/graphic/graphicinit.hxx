@@ -2,37 +2,20 @@
 #define GRAPHICINIT_H
 
 #pragma once
-#include <filesystem>
-#include <map>
-#include <vector>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <array>
-#include <cmath>
-#include <algorithm>
-#include <cassert>
-#include <sstream>
-#include <stdexcept>
-#include <thread>
-#include <cstddef>
+
 
 //#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
-//glm
-#include "../foundation/glm/glm.hpp"
-#include "../foundation/glm/gtc/matrix_transform.hpp"
-#include "../foundation/glm/gtc/type_ptr.hpp"
+
 //other
-#include "../objects/structs.hxx"
-#include "../animation.hxx"
-#include "../objects/numbers.hxx"
-#include "../foundation/lodepng.h"
-//
+//#include "../objects/structs.hxx"
+//#include "../animation.hxx"
+//#include "../objects/numbers.hxx"
+
 //#include "../myimgui.h"
 #include "../foundation/glad/glad.h"
-
+#include "../objects/basicPerson.h"
 
 static void APIENTRY callback_opengl_debug(
     GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
@@ -59,7 +42,7 @@ private:
     std::vector<SDL_Texture*> names;
 
     //numbers for timer
-    numbersText* numbers_=NULL;
+    //numbersText* numbers_=NULL;
 
     //timer
     bool boolTime=true;
@@ -82,10 +65,11 @@ public:
     glm::mat4* modelMatrices=new glm::mat4[1];
     unsigned int testVAO, testVBO, testEBO;
 
+
 public:
     graphicInit();
     ~graphicInit();
-    bool load_texture(std::string_view path,int number);
+    bool load_texture(std::string path,int number);
     void swapBuffers();
     //shaders
     std::string initProgramBackground();
@@ -93,10 +77,17 @@ public:
     std::string activateProgBackground(uint8_t text_num);
     std::string activateProgBody(uint8_t text_num, glm::mat4 mat_in);
     std::string changeRotMat(glm::mat4 mat_in);
+    std::string changeProj(glm::mat4 mat_in);
+
     //render
     void render_triangle(const triangle& t, glm::mat4& mat_in);
+    void render_triangle3d(const triangle3d& t, glm::mat4& mat_in);
+    void render_triangle3dVAO(const basicObject& t);
+    void render_line_triangle(const triangle& t, glm::mat4& mat_in);
+    void render_line_triangle3d(const triangle3d& t, glm::mat4& mat_in);
+
     void renderOneColGL();
-    void render_background(int pos);
+    void render_background(int pos, glm::mat4& mat_in);
 
 
 };
