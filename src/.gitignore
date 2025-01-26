@@ -3,3 +3,4 @@ build-cmake
 testgit
 .vs
 cmake-build-debug
+libs
