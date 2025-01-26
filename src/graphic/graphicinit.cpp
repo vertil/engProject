@@ -2,12 +2,13 @@
 
 graphicInit::graphicInit()
 {
+
     if( TTF_Init() == -1 )
     {
         printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
         SDL_Quit();;
     }
-
+    
     std::stringstream serr;
     using namespace std;
 
@@ -50,7 +51,7 @@ graphicInit::graphicInit()
     }
 
     int gl_major_ver       = 3;//3
-    int gl_minor_ver       = 2;//2
+    int gl_minor_ver       = 0;//2
     int gl_context_profile = SDL_GL_CONTEXT_PROFILE_ES;
 
     const char* platform_from_sdl = SDL_GetPlatform();
@@ -457,6 +458,7 @@ std::string graphicInit::initProgramBody()
                                              {
                                                  v_tex_coord=a_tex_coord;
                                                  gl_Position=Proj*view*worldPos*vec4(vPosition,1.0f);//vertex pos
+
                                              }
                                         )";
     const char* source            = vertex_shader_src.data();

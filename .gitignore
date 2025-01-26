@@ -1,2 +1,5 @@
 build-cmake 
 build
+SDL2
+.git
+libraries_old

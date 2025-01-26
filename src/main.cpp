@@ -12,6 +12,8 @@
 int main(int argc, char *argv[]){
 
 
+    std::cout<<"aboba"<<std::endl;
+
     graphicInit gr;
     basicObject myObj;
     basicPerson myPers=basicPerson(&myObj);
@@ -19,6 +21,8 @@ int main(int argc, char *argv[]){
     gr.load_texture("../materials/beerold.png",0);
     gr.load_texture("../materials/Cat_diffuse.jpg",1);
     gr.load_texture("../materials/black.png",2);
+
+
 
     gr.initProgramBackground();
 
